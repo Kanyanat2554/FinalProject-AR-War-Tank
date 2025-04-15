@@ -94,7 +94,7 @@ namespace ChobiAssets.KTP
             }
             else if (mode == 1)
             { // Free aiming.
-                targetPosition += bodyRigidbody.velocity * Time.fixedDeltaTime;
+                targetPosition += bodyRigidbody.linearVelocity * Time.fixedDeltaTime;
             }
         }
 

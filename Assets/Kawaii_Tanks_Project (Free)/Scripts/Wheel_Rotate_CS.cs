@@ -102,7 +102,7 @@ namespace ChobiAssets.KTP
 
         void Destroyed_Linkage()
         { // Called from "Damage_Control_CS".
-            thisRigidbody.angularDrag = Mathf.Infinity;
+            thisRigidbody.angularDamping = Mathf.Infinity;
             Destroy(this);
         }
 
