@@ -88,7 +88,7 @@ namespace ChobiAssets.KTP
             Speed_Control();
 
             // Get the current velocity.
-            currentVelocityMag = bodyRigidbody.velocity.magnitude;
+            currentVelocityMag = bodyRigidbody.linearVelocity.magnitude;
             currentAngularVelocityMag = bodyRigidbody.angularVelocity.magnitude;
         }
 
@@ -218,7 +218,7 @@ namespace ChobiAssets.KTP
             { // The ray hits the ground.
 
                 // Control the velocity of the Rigidbody.
-                Vector3 currentVelocity = bodyRigidbody.velocity;
+                Vector3 currentVelocity = bodyRigidbody.linearVelocity;
                 if (moveAxis.y == 0.0f && moveAxis.x == 0.0f)
                 { // The tank should stop.
                     // Reduce the Rigidbody velocity gradually.
@@ -250,7 +250,7 @@ namespace ChobiAssets.KTP
                 }
 
                 // Set the new velocity.
-                bodyRigidbody.velocity = currentVelocity;
+                bodyRigidbody.linearVelocity = currentVelocity;
             }
         }
 

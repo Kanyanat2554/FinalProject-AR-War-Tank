@@ -52,7 +52,7 @@ namespace ChobiAssets.KTP
             }
 
             // Control the posture.
-            thisTransform.LookAt(thisRigidbody.position + thisRigidbody.velocity);
+            thisTransform.LookAt(thisRigidbody.position + thisRigidbody.linearVelocity);
 
             // Cast a ray to detect an obstacle..
             Cast_Ray();
@@ -66,8 +66,8 @@ namespace ChobiAssets.KTP
 
                 // Cast a ray forward.
                 ray.origin = thisRigidbody.position;
-                ray.direction = thisRigidbody.velocity;
-                Physics.Raycast(ray, out RaycastHit raycastHit, thisRigidbody.velocity.magnitude * Time.fixedDeltaTime, Layer_Settings_CS.Layer_Mask);
+                ray.direction = thisRigidbody.linearVelocity;
+                Physics.Raycast(ray, out RaycastHit raycastHit, thisRigidbody.linearVelocity.magnitude * Time.fixedDeltaTime, Layer_Settings_CS.Layer_Mask);
                 if (raycastHit.collider)
                 { // The ray hits.
                     // Store the hit point for the next frame.

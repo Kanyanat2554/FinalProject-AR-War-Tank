@@ -62,7 +62,7 @@ namespace ChobiAssets.KTP
             yield return new WaitForFixedUpdate();
             var rigidbody = bulletObject.GetComponent<Rigidbody>();
             var currentVelocity = bulletObject.transform.forward * bulletVelocity;
-            rigidbody.velocity = currentVelocity;
+            rigidbody.linearVelocity = currentVelocity;
         }
 
     }
