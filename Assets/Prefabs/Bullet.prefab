@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 13652648}
   - component: {fileID: 9601538}
   - component: {fileID: 11402004}
-  - component: {fileID: 388535307301689288}
   m_Layer: 0
   m_Name: Bullet
   m_TagString: Finish
@@ -273,17 +272,3 @@ MonoBehaviour:
   brokenObject: {fileID: 185180, guid: e193bd6b30c4fcf488bebb7cf754714c, type: 3}
   thisRigidbody: {fileID: 5424884}
   attackForce: 100
---- !u!114 &388535307301689288
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 151272}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72228a4d0cfd20a4a982d4844c778dbf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 10
-  damage: 10
