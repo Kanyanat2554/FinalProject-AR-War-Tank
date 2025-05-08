@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-    public int maxHP = 100;
+    [SerializeField] public int maxHP;
     public int currentHP;
     public GameObject explosionEffect;
 
