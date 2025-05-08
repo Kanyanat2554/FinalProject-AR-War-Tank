@@ -15473,6 +15473,21 @@ MonoBehaviour:
   reloadTime: 5
   fireButton: {fileID: 1286571927}
   ammoText: {fileID: 1687430047}
+--- !u!114 &1390938416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390938410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd3700dd17821734db609f17237ab515, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  healthSlider: {fileID: 1860687137}
+  loseSceneName: Lose
 --- !u!1001 &1404826631
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16745,6 +16760,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1390938415}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: fd83e6cb9fb13014fbdfae82bc65d764,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1390938416}
     - targetCorrespondingSourceObject: {fileID: 100002, guid: fd83e6cb9fb13014fbdfae82bc65d764,
         type: 3}
       insertIndex: -1
@@ -21284,6 +21303,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.46000004, y: 0.17000005, z: 0.31}
   m_Center: {x: 0.000000007450581, y: 0.035000004, z: -0.0049923733}
+--- !u!114 &1860687137 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8802503221979389718, guid: fbf0c9c2d96475b4eb0a805af45b2d93,
+    type: 3}
+  m_PrefabInstance: {fileID: 1309163943}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1876815031
 PrefabInstance:
   m_ObjectHideFlags: 0
