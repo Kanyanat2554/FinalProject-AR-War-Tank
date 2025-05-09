@@ -15,19 +15,20 @@ public class UIManager : MonoBehaviour
 
     // Text Elements
     public TextMeshProUGUI ammoText;
-    //public TextMeshProUGUI levelText;
-    //public TextMeshProUGUI enemyCounter;
 
     // Option Menu
     public GameObject optionPanel;
 
     // Level Settings
-    private int totalEnemies;
-    private int enemiesRemaining;
+    public int totalEnemies;
+    public int enemiesRemaining;
 
     // Level Data
-    public LevelData[] levelDatas;
-    private int currentLevelIndex = 0;
+    [SerializeField]
+    private LevelData[] _levelDatas;
+    public static LevelData[] levelDatas;
+   
+    public int currentLevelIndex = 0;
 
     // ========== INITIALIZATION ==========
     void Awake()
@@ -36,14 +37,24 @@ public class UIManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            levelDatas = _levelDatas; // คัดลอกข้อมูลไปตัวแปร static
             DontDestroyOnLoad(gameObject);
-            Debug.Log("UIManager instance created");
         }
         else
         {
             Debug.Log("Duplicate UIManager destroyed");
             Destroy(gameObject);
         }
+        if (Instance != null && Instance != this)
+        {
+            Debug.Log($"Destroying duplicate UIManager in {gameObject.scene.name}");
+            Destroy(gameObject);
+            return; // ออกจากการทำงานทันที
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+        Debug.Log($"UIManager initialized in {gameObject.scene.name}");
     }
 
     void Start()
@@ -152,6 +163,16 @@ public class UIManager : MonoBehaviour
 
     private IEnumerator LoadLevelAsync(LevelData levelData)
     {
+        /*AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(levelData.sceneName);
+
+        // รอจนกระทั่งโหลดซีนเสร็จสิ้น
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+
+        // ตั้งค่าด่านหลังจากโหลดซีนเสร็จแล้ว
+        InitializeLevel(levelData.enemyCount, levelData.levelNumber);*/
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(levelData.sceneName);
 
         // รอจนกระทั่งโหลดซีนเสร็จสิ้น
@@ -159,6 +180,9 @@ public class UIManager : MonoBehaviour
         {
             yield return null;
         }
+
+        // รอให้ซีนใหม่ตั้งค่าทั้งหมดเสร็จ
+        yield return new WaitForEndOfFrame();
 
         // ตั้งค่าด่านหลังจากโหลดซีนเสร็จแล้ว
         InitializeLevel(levelData.enemyCount, levelData.levelNumber);
