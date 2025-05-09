@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 13652648}
   - component: {fileID: 9601538}
   - component: {fileID: 11402004}
+  - component: {fileID: -9007984554017395352}
   m_Layer: 0
   m_Name: Bullet
   m_TagString: Finish
@@ -263,7 +264,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 151272}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7ab8277bd35355418c0f73c755d374f, type: 3}
   m_Name: 
@@ -272,3 +273,18 @@ MonoBehaviour:
   brokenObject: {fileID: 185180, guid: e193bd6b30c4fcf488bebb7cf754714c, type: 3}
   thisRigidbody: {fileID: 5424884}
   attackForce: 100
+--- !u!114 &-9007984554017395352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 151272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae483712a1d963d4ebe6fdf2a7d09b47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageAmount: 10
+  speed: 20
+  lifetime: 3
