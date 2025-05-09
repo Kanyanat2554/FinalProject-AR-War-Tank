@@ -1,58 +1,21 @@
 using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class EnemyHealth : MonoBehaviour
 {
-    [Header("Health Settings")]
-    [SerializeField] int maxHealth = 100;
-    [SerializeField] private Slider healthSlider;
-    [SerializeField] private Vector3 healthBarOffset = new Vector3(0, 2f, 0);
-    [SerializeField] GameObject explosionEffect;
-
-    private int currentHealth;
-
-    private void Start()
-    {
-        currentHealth = maxHealth;
-
-        if (healthSlider != null)
-        {
-            healthSlider.transform.SetParent(null);
-            healthSlider.gameObject.SetActive(true);
-            UpdateHealthUI();
-        }
-    }
-
-    private void Update()
-    {
-        if (healthSlider != null && healthSlider.gameObject != null &&
-            Camera.main != null && gameObject != null)
-        {
-            healthSlider.transform.position = transform.position + healthBarOffset;
-            healthSlider.transform.rotation = Camera.main.transform.rotation;
-        }
-    }
+    public int health = 50;
+    public GameObject explosionEffect;
 
     public void TakeDamage(int damage)
     {
-        currentHealth -= damage;
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        health -= damage;
 
-        ShowHealthBar();
-        UpdateHealthUI();
+        Debug.Log($"Enemy ({gameObject.name}) took {damage} damage. Current HP: {health}");
 
-        if (currentHealth <= 0)
+        if (health <= 0)
         {
+            Debug.Log($"Enemy ({gameObject.name}) died!");
             Die();
-        }
-    }
-
-    private void UpdateHealthUI()
-    {
-        if (healthSlider != null)
-        {
-            healthSlider.value = (float)currentHealth / maxHealth;
         }
     }
 
@@ -60,39 +23,34 @@ public class EnemyHealth : MonoBehaviour
     {
         if (explosionEffect != null)
         {
-            Instantiate(explosionEffect, transform.position, Quaternion.identity);
-        }
-
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.EnemyDefeated();
-        }
-
-        if (healthSlider != null && healthSlider.gameObject != null)
-        {
-            Destroy(healthSlider.gameObject);
+            Instantiate(explosionEffect, transform.position, transform.rotation);
         }
 
         Destroy(gameObject);
+
+        // ตรวจสอบว่าศัตรูทั้งหมดถูกทำลายหรือไม่
+        CheckAllEnemiesDestroyed();
     }
 
-    private IEnumerator HideHealthBar()
+    private void CheckAllEnemiesDestroyed()
     {
-        yield return new WaitForSeconds(1f);
-
-        if (healthSlider != null)
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        if (enemies.Length <= 1) // เพราะตัวเองยังไม่ถูกทำลายทันที
         {
-            healthSlider.gameObject.SetActive(false);
+            Invoke("LoadNextLevel", 2f);
         }
     }
 
-    public void ShowHealthBar()
+    private void LoadNextLevel()
     {
-        if (healthSlider != null)
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        if (currentSceneIndex < SceneManager.sceneCountInBuildSettings - 3) // -3 เพราะมี Scene Win, Lose, MainMenu
         {
-            healthSlider.gameObject.SetActive(true);
-            StopAllCoroutines();
-            StartCoroutine(HideHealthBar());
+            SceneManager.LoadScene(currentSceneIndex + 1);
+        }
+        else
+        {
+            SceneManager.LoadScene("Win");
         }
     }
 }

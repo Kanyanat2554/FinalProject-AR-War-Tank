@@ -21,8 +21,11 @@ public class PlayerHealth : MonoBehaviour
         currentHealth -= damage;
         UpdateHealthUI();
 
+        Debug.Log($"Player took {damage} damage. Current HP: {currentHealth}/{maxHealth}");
+
         if (currentHealth <= 0)
         {
+            Debug.Log("Player died!");
             Die();
         }
     }

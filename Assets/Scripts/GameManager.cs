@@ -1,15 +1,9 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour
+public class ARGameManager : MonoBehaviour
 {
-    public static GameManager Instance;
-
-    [SerializeField] string winSceneName = "Win";
-    [SerializeField] int totalLevels = 3;
-
-    private int currentLevel = 1;
-    private int enemiesInLevel;
+    public static ARGameManager Instance;
 
     private void Awake()
     {
@@ -24,31 +18,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void RegisterEnemy()
+    public void GameOver()
     {
-        enemiesInLevel++;
+        SceneManager.LoadScene("Lose");
     }
 
-    public void EnemyDefeated()
+    public void Victory()
     {
-        enemiesInLevel--;
-
-        if (enemiesInLevel <= 0)
-        {
-            if (currentLevel >= totalLevels)
-            {
-                SceneManager.LoadScene(winSceneName);
-            }
-            else
-            {
-                currentLevel++;
-                Invoke("LoadNextLevel", 2f);
-            }
-        }
-    }
-
-    private void LoadNextLevel()
-    {
-        SceneManager.LoadScene($"Level{currentLevel}");
+        SceneManager.LoadScene("Win");
     }
 }
