@@ -1,18 +1,35 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class EnemyHealth : MonoBehaviour
 {
-    [SerializeField] public int health;
+    [SerializeField] public int maxHealth = 100;
+    [SerializeField] private int currentHealth;
     public GameObject explosionEffect;
+    public EnemyHealthBar healthBar;
+
+    private void Start()
+    {
+        currentHealth = maxHealth;
+
+        // ตรวจสอบว่า healthBar มี Component EnemyHealthBar หรือไม่
+        healthBar = GetComponent<EnemyHealthBar>();
+        if (healthBar == null)
+        {
+            healthBar = gameObject.AddComponent<EnemyHealthBar>();
+        }
+
+        healthBar.maxHealth = maxHealth;
+        healthBar.currentHealth = currentHealth;
+    }
 
     public void TakeDamage(int damage)
     {
-        health -= damage;
+        currentHealth -= damage;
+        healthBar.TakeDamage(damage);
 
-        Debug.Log($"Enemy ({gameObject.name}) took {damage} damage. Current HP: {health}");
+        Debug.Log($"Enemy ({gameObject.name}) took {damage} damage. Current HP: {currentHealth}");
 
-        if (health <= 0)
+        if (currentHealth <= 0)
         {
             Debug.Log($"Enemy ({gameObject.name}) died!");
             Die();
@@ -26,33 +43,7 @@ public class EnemyHealth : MonoBehaviour
             Instantiate(explosionEffect, transform.position, transform.rotation);
         }
 
-        Destroy(gameObject);
-
         UIManager.Instance?.EnemyDefeated();
-
-        // ตรวจสอบว่าศัตรูทั้งหมดถูกทำลายหรือไม่
-        CheckAllEnemiesDestroyed();
-    }
-
-    private void CheckAllEnemiesDestroyed()
-    {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-        if (enemies.Length <= 1) // เพราะตัวเองยังไม่ถูกทำลายทันที
-        {
-            Invoke("LoadNextLevel", 2f);
-        }
-    }
-
-    private void LoadNextLevel()
-    {
-        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-        if (currentSceneIndex < SceneManager.sceneCountInBuildSettings - 3) // -3 เพราะมี Scene Win, Lose, MainMenu
-        {
-            SceneManager.LoadScene(currentSceneIndex + 1);
-        }
-        else
-        {
-            SceneManager.LoadScene("Win");
-        }
+        Destroy(gameObject);
     }
 }

@@ -11,7 +11,6 @@ public class UIManager : MonoBehaviour
 
     // HP Bar
     public Slider playerHPBar;
-    public Slider enemyHPBar;
 
     // Text Elements
     public TextMeshProUGUI ammoText;
@@ -106,11 +105,6 @@ public class UIManager : MonoBehaviour
             playerHPBar.value = current / max;
     }
 
-    public void SetEnemyHP(float current, float max)
-    {
-        if (enemyHPBar != null)
-            enemyHPBar.value = current / max;
-    }
 
     public void SetAmmo(int value)
     {
