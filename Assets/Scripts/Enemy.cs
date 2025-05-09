@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    public float detectionRange = 10f;
+    [SerializeField] public float detectionRange;
     public float fireRate = 1f;
     public Transform bulletSpawnPoint;
     public GameObject bulletPrefab;
-    public float bulletForce = 15f;
+    [SerializeField] public float bulletForce;
 
     private Transform player;
     private float nextFireTime;

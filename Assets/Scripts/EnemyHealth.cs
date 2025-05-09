@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class EnemyHealth : MonoBehaviour
 {
-    public int health = 50;
+    [SerializeField] public int health;
     public GameObject explosionEffect;
 
     public void TakeDamage(int damage)
@@ -27,6 +27,8 @@ public class EnemyHealth : MonoBehaviour
         }
 
         Destroy(gameObject);
+
+        UIManager.Instance?.EnemyDefeated();
 
         // ตรวจสอบว่าศัตรูทั้งหมดถูกทำลายหรือไม่
         CheckAllEnemiesDestroyed();
