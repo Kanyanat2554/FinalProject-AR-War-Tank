@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 
 public class UIManager : MonoBehaviour
@@ -14,8 +15,8 @@ public class UIManager : MonoBehaviour
 
     // Text Elements
     public TextMeshProUGUI ammoText;
-    public TextMeshProUGUI levelText;
-    public TextMeshProUGUI enemyCounter;
+    //public TextMeshProUGUI levelText;
+    //public TextMeshProUGUI enemyCounter;
 
     // Option Menu
     public GameObject optionPanel;
@@ -46,25 +47,42 @@ public class UIManager : MonoBehaviour
     {
         if (optionPanel != null)
             optionPanel.SetActive(false);
+
+        // ตรวจสอบการเชื่อมโยง UI Elements
+        //if (levelText == null) Debug.LogError("levelText is not assigned!");
+        //if (enemyCounter == null) Debug.LogError("enemyCounter is not assigned!");
+
+        // ตรวจสอบ Level Data
+        if (levelDatas == null || levelDatas.Length == 0)
+            Debug.LogError("levelDatas is not set up properly!");
     }
 
     // ========== LEVEL MANAGEMENT ==========
+
+    public LevelUIController levelUI;
+
     public void InitializeLevel(int enemyCount, int levelNum)
     {
         totalEnemies = enemyCount;
         enemiesRemaining = enemyCount;
-        SetEnemyCount(enemiesRemaining);
-        SetLevel(levelNum);
+
+        if (levelUI != null)
+        {
+            levelUI.SetLevel(levelNum);
+            levelUI.SetEnemyCount(totalEnemies);
+        }
+
+        Debug.Log($"Level {levelNum} initialized. Enemies: {enemiesRemaining}/{totalEnemies}");
     }
 
     public void EnemyDefeated()
     {
         enemiesRemaining--;
-        SetEnemyCount(enemiesRemaining);
+        if (levelUI != null)
+            levelUI.EnemyDefeated();
 
         if (enemiesRemaining <= 0)
         {
-            // เปลี่ยนด่านหลังจาก 2 วินาที
             Invoke("LoadNextLevel", 2f);
         }
     }
@@ -94,7 +112,22 @@ public class UIManager : MonoBehaviour
 
         currentLevelIndex = levelIndex;
         var levelData = levelDatas[levelIndex];
-        SceneManager.LoadScene(levelData.sceneName);
+
+        // ใช้ SceneManager.LoadScene แบบ asynchronous และตั้งค่าหลังจากโหลดเสร็จ
+        StartCoroutine(LoadLevelAsync(levelData));
+    }
+
+    private IEnumerator LoadLevelAsync(LevelData levelData)
+    {
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(levelData.sceneName);
+
+        // รอจนกระทั่งโหลดซีนเสร็จสิ้น
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+
+        // ตั้งค่าด่านหลังจากโหลดซีนเสร็จแล้ว
         InitializeLevel(levelData.enemyCount, levelData.levelNumber);
     }
 
@@ -114,14 +147,17 @@ public class UIManager : MonoBehaviour
 
     public void SetLevel(int levelNumber)
     {
-        if (levelText != null)
-            levelText.text = "Level: " + levelNumber;
+        if (levelUI != null)
+            levelUI.SetLevel(levelNumber);
     }
 
     public void SetEnemyCount(int count)
     {
-        if (enemyCounter != null)
-            enemyCounter.text = "Enemies: " + count + "/" + totalEnemies;
+        if (levelUI != null)
+        {
+            // ตั้งค่าครั้งแรก
+            levelUI.SetEnemyCount(totalEnemies);
+        }
     }
 
     // ========== OPTION MENU FUNCTIONS ==========
