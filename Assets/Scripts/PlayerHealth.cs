@@ -4,11 +4,11 @@ using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
-    [SerializeField] int maxHealth = 100;
+    [SerializeField] public int maxHealth = 100;
     [SerializeField] Slider healthSlider;
     [SerializeField] string loseSceneName = "Lose";
 
-    private int currentHealth;
+    public int currentHealth;
 
     private void Start()
     {
@@ -30,7 +30,7 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    private void UpdateHealthUI()
+    public void UpdateHealthUI()
     {
         healthSlider.value = (float)currentHealth / maxHealth;
     }

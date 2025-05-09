@@ -1,9 +1,8 @@
 fileFormatVersion: 2
-guid: 3997e2241185407d80309a82f9148466
-ShaderImporter:
+guid: 4ced6a3087f97f7408e1152395e800a5
+NativeFormatImporter:
   externalObjects: {}
-  defaultTextures: []
-  nonModifiableTextures: []
+  mainObjectFileID: 2100000
   userData: 
   assetBundleName: 
   assetBundleVariant: 
@@ -11,6 +10,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 275780
   packageName: Free Healing Item (including C# Script)
-  packageVersion: 
-  assetPath: Assets/TextMesh Pro/Shaders/TMPro_Properties.cginc
-  uploadId: 0
+  packageVersion: 1.0
+  assetPath: Assets/ViapixGames/HealingItem/Materials/DemoPlayer.mat
+  uploadId: 644048
