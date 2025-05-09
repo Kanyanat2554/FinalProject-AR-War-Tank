@@ -163,16 +163,6 @@ public class UIManager : MonoBehaviour
 
     private IEnumerator LoadLevelAsync(LevelData levelData)
     {
-        /*AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(levelData.sceneName);
-
-        // รอจนกระทั่งโหลดซีนเสร็จสิ้น
-        while (!asyncLoad.isDone)
-        {
-            yield return null;
-        }
-
-        // ตั้งค่าด่านหลังจากโหลดซีนเสร็จแล้ว
-        InitializeLevel(levelData.enemyCount, levelData.levelNumber);*/
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(levelData.sceneName);
 
         // รอจนกระทั่งโหลดซีนเสร็จสิ้น

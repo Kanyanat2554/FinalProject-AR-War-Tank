@@ -13,6 +13,10 @@ public class LevelUIController : MonoBehaviour
 
     private void Start()
     {
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.levelUI = this;
+        }
 
         UpdateLevelDisplay();
         UpdateEnemyDisplay();
@@ -20,14 +24,10 @@ public class LevelUIController : MonoBehaviour
 
     private void Awake()
     {
-        if (UIManager.Instance != null)
-        {
-            UIManager.Instance.levelUI = this;
-
             // Õ—æ‡¥µ UI ∑—π∑’∑’Ë‚À≈¥´’π
-            UIManager.Instance.SetLevel(UIManager.Instance.currentLevelIndex + 1);
-            UIManager.Instance.SetEnemyCount(UIManager.Instance.enemiesRemaining);
-        }
+        UIManager.Instance.SetLevel(UIManager.Instance.currentLevelIndex + 1);
+        UIManager.Instance.SetEnemyCount(UIManager.Instance.enemiesRemaining);
+        
     }
 
     public void SetLevel(int level)
