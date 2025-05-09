@@ -27,6 +27,7 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private LevelData[] _levelDatas;
     public static LevelData[] levelDatas;
+
    
     public int currentLevelIndex = 0;
 
@@ -132,15 +133,14 @@ public class UIManager : MonoBehaviour
 
     private void LoadNextLevel()
     {
-        currentLevelIndex++;
+        int nextLevelIndex = currentLevelIndex + 1;
 
-        if (currentLevelIndex < levelDatas.Length)
+        if (nextLevelIndex < levelDatas.Length)
         {
-            LoadLevel(currentLevelIndex);
+            LoadLevel(nextLevelIndex);
         }
         else
         {
-            // âËÅ´«Õ¹¨ºà¡ÁàÁ×èÍ¼èÒ¹·Ø¡´èÒ¹
             SceneManager.LoadScene("Win");
         }
     }
@@ -153,7 +153,7 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        currentLevelIndex = levelIndex;
+        currentLevelIndex = levelIndex; // <-- ÂéÒÂÁÒ·ÓµÃ§¹Õé
         var levelData = levelDatas[levelIndex];
 
         Debug.Log($"Loading level {levelData.levelNumber} with {levelData.enemyCount} enemies");

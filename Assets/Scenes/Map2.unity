@@ -63567,7 +63567,16 @@ MonoBehaviour:
   optionPanel: {fileID: 1018697692}
   totalEnemies: 5
   enemiesRemaining: 5
-  _levelDatas: []
+  _levelDatas:
+  - sceneName: Map1
+    levelNumber: 1
+    enemyCount: 3
+  - sceneName: Map2
+    levelNumber: 2
+    enemyCount: 5
+  - sceneName: Map3
+    levelNumber: 3
+    enemyCount: 6
   currentLevelIndex: 1
   levelUI: {fileID: 367760484}
 --- !u!1001 &1470433088
