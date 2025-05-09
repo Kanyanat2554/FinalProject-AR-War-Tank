@@ -32,29 +32,34 @@ public class UIManager : MonoBehaviour
     // ========== INITIALIZATION ==========
     void Awake()
     {
+        Debug.Log("UIManager Awake called");
         if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            Debug.Log("UIManager instance created");
         }
         else
         {
+            Debug.Log("Duplicate UIManager destroyed");
             Destroy(gameObject);
         }
     }
 
     void Start()
     {
-        if (optionPanel != null)
-            optionPanel.SetActive(false);
+        Debug.Log($"Initial Level Data: {levelDatas?.Length ?? 0} levels loaded");
 
-        // ตรวจสอบการเชื่อมโยง UI Elements
-        //if (levelText == null) Debug.LogError("levelText is not assigned!");
-        //if (enemyCounter == null) Debug.LogError("enemyCounter is not assigned!");
+        if (levelDatas != null && levelDatas.Length > 0)
+        {
+            Debug.Log($"First level enemies: {levelDatas[0].enemyCount}");
+        }
 
-        // ตรวจสอบ Level Data
-        if (levelDatas == null || levelDatas.Length == 0)
-            Debug.LogError("levelDatas is not set up properly!");
+        // เริ่มเกมด้วยด่านแรก
+        if (currentLevelIndex == 0 && levelDatas != null && levelDatas.Length > 0)
+        {
+            InitializeLevel(levelDatas[0].enemyCount, levelDatas[0].levelNumber);
+        }
     }
 
     // ========== LEVEL MANAGEMENT ==========
@@ -63,26 +68,53 @@ public class UIManager : MonoBehaviour
 
     public void InitializeLevel(int enemyCount, int levelNum)
     {
+        if (enemyCount <= 0)
+        {
+            Debug.LogError($"Invalid enemy count: {enemyCount} for level {levelNum}");
+            return;
+        }
+
         totalEnemies = enemyCount;
         enemiesRemaining = enemyCount;
+
+        Debug.Log($"Level {levelNum} initialized with {totalEnemies} enemies");
 
         if (levelUI != null)
         {
             levelUI.SetLevel(levelNum);
             levelUI.SetEnemyCount(totalEnemies);
         }
-
-        Debug.Log($"Level {levelNum} initialized. Enemies: {enemiesRemaining}/{totalEnemies}");
+        else
+        {
+            Debug.LogError("levelUI is not assigned!");
+        }
     }
 
     public void EnemyDefeated()
     {
-        enemiesRemaining--;
-        if (levelUI != null)
-            levelUI.EnemyDefeated();
-
+        // ตรวจสอบว่ายังมีศัตรูเหลืออยู่ก่อนลดค่า
         if (enemiesRemaining <= 0)
         {
+            Debug.LogWarning("Attempted to decrement enemies when count is already 0");
+            return;
+        }
+
+        enemiesRemaining--;
+
+        // ตรวจสอบว่า levelUI ไม่เป็น null ก่อนเรียกใช้
+        if (levelUI != null)
+        {
+            levelUI.UpdateRemainingEnemies(enemiesRemaining);
+        }
+        else
+        {
+            Debug.LogError("levelUI is null in UIManager!");
+        }
+
+        // ตรวจสอบเงื่อนไขเคลียร์ด่าน
+        if (enemiesRemaining <= 0)
+        {
+            Debug.Log("All enemies defeated! Loading next level...");
             Invoke("LoadNextLevel", 2f);
         }
     }
@@ -106,14 +138,15 @@ public class UIManager : MonoBehaviour
     {
         if (levelIndex < 0 || levelIndex >= levelDatas.Length)
         {
-            Debug.LogError("Invalid level index!");
+            Debug.LogError($"Invalid level index: {levelIndex}");
             return;
         }
 
         currentLevelIndex = levelIndex;
         var levelData = levelDatas[levelIndex];
 
-        // ใช้ SceneManager.LoadScene แบบ asynchronous และตั้งค่าหลังจากโหลดเสร็จ
+        Debug.Log($"Loading level {levelData.levelNumber} with {levelData.enemyCount} enemies");
+
         StartCoroutine(LoadLevelAsync(levelData));
     }
 
@@ -155,8 +188,7 @@ public class UIManager : MonoBehaviour
     {
         if (levelUI != null)
         {
-            // ตั้งค่าครั้งแรก
-            levelUI.SetEnemyCount(totalEnemies);
+            levelUI.UpdateRemainingEnemies(count); // ต้องเรียกฟังก์ชันใหม่ที่คุณต้องเพิ่ม
         }
     }
 

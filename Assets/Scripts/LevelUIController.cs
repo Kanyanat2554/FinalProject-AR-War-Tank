@@ -7,9 +7,9 @@ public class LevelUIController : MonoBehaviour
     public TextMeshProUGUI levelText;
     public TextMeshProUGUI enemyCounterText;
 
-    [SerializeField] private int currentLevel;
-    [SerializeField] private int totalEnemies;
-    [SerializeField] private int remainingEnemies;
+    [SerializeField] private int currentLevel = 1;
+    [SerializeField] private int totalEnemies = 3;
+    [SerializeField] private int remainingEnemies = 3;
 
     private void Start()
     {
@@ -46,6 +46,12 @@ public class LevelUIController : MonoBehaviour
     {
         if (enemyCounterText != null)
             enemyCounterText.text = $"Enemies: {remainingEnemies}/{totalEnemies}";
+    }
+
+    public void UpdateRemainingEnemies(int remaining)
+    {
+        remainingEnemies = Mathf.Clamp(remaining, 0, totalEnemies);
+        UpdateEnemyDisplay();
     }
 }
 

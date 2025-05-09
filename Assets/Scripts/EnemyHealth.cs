@@ -7,6 +7,8 @@ public class EnemyHealth : MonoBehaviour
     public GameObject explosionEffect;
     public EnemyHealthBar healthBar;
 
+    private bool isDead = false;
+
     private void Start()
     {
         currentHealth = maxHealth;
@@ -38,12 +40,27 @@ public class EnemyHealth : MonoBehaviour
 
     private void Die()
     {
+        if (isDead) return;
+
+        isDead = true; // ตั้งค่า isDead เป็น true ก่อนทำอย่างอื่น
+
+        // แจ้ง UIManager ว่าศัตรูถูกทำลาย
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.EnemyDefeated();
+        }
+        else
+        {
+            Debug.LogError("UIManager.Instance is null!");
+        }
+
+        // สร้างเอฟเฟกต์ระเบิด (ถ้ามี)
         if (explosionEffect != null)
         {
             Instantiate(explosionEffect, transform.position, transform.rotation);
         }
 
-        UIManager.Instance?.EnemyDefeated();
+        // ทำลายวัตถุ
         Destroy(gameObject);
     }
 }
