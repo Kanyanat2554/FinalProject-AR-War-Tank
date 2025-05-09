@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 
+
 public class UIManager : MonoBehaviour
 {
     // Singleton pattern
@@ -21,8 +22,12 @@ public class UIManager : MonoBehaviour
     public GameObject optionPanel;
 
     // Level Settings
-    private int totalEnemies = 3; // จำนวนศัตรูทั้งหมดในด่าน 1
+    private int totalEnemies;
     private int enemiesRemaining;
+
+    // Level Data
+    public LevelData[] levelDatas;
+    private int currentLevelIndex = 0;
 
     // ========== INITIALIZATION ==========
     void Awake()
@@ -40,19 +45,17 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        // Initialize enemy count for level 1
-        InitializeLevel(3); // ตั้งค่าศัตรู 3 ตัวสำหรับด่าน 1
-
         if (optionPanel != null)
             optionPanel.SetActive(false);
     }
 
     // ========== LEVEL MANAGEMENT ==========
-    public void InitializeLevel(int enemyCount)
+    public void InitializeLevel(int enemyCount, int levelNum)
     {
         totalEnemies = enemyCount;
         enemiesRemaining = enemyCount;
         SetEnemyCount(enemiesRemaining);
+        SetLevel(levelNum);
     }
 
     public void EnemyDefeated()
@@ -69,24 +72,31 @@ public class UIManager : MonoBehaviour
 
     private void LoadNextLevel()
     {
-        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-        SceneManager.LoadScene(currentSceneIndex + 1);
+        currentLevelIndex++;
 
-        if (SceneManager.GetActiveScene().name == "Map2")
+        if (currentLevelIndex < levelDatas.Length)
         {
-            InitializeLevel(5); 
+            LoadLevel(currentLevelIndex);
+        }
+        else
+        {
+            // โหลดซีนจบเกมเมื่อผ่านทุกด่าน
+            SceneManager.LoadScene("Win");
         }
     }
 
-    public LevelData[] levelDatas;
-    private int currentLevelIndex = 0;
-
     public void LoadLevel(int levelIndex)
     {
+        if (levelIndex < 0 || levelIndex >= levelDatas.Length)
+        {
+            Debug.LogError("Invalid level index!");
+            return;
+        }
+
         currentLevelIndex = levelIndex;
-        SceneManager.LoadScene(levelDatas[levelIndex].sceneName);
-        InitializeLevel(levelDatas[levelIndex].enemyCount);
-        SetLevel(levelDatas[levelIndex].levelName);
+        var levelData = levelDatas[levelIndex];
+        SceneManager.LoadScene(levelData.sceneName);
+        InitializeLevel(levelData.enemyCount, levelData.levelNumber);
     }
 
     // ========== UI FUNCTIONS ==========
@@ -108,10 +118,10 @@ public class UIManager : MonoBehaviour
             ammoText.text = "Ammo: " + value;
     }
 
-    public void SetLevel(string levelName)
+    public void SetLevel(int levelNumber)
     {
         if (levelText != null)
-            levelText.text = "Level: " + levelName;
+            levelText.text = "Level: " + levelNumber;
     }
 
     public void SetEnemyCount(int count)
@@ -151,6 +161,6 @@ public class UIManager : MonoBehaviour
     public void StartGame()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene("Map1");
+        LoadLevel(0);
     }
 }
