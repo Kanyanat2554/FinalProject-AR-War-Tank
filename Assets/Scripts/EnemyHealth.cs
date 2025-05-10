@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EnemyHealth : MonoBehaviour
 {
@@ -41,26 +42,34 @@ public class EnemyHealth : MonoBehaviour
     private void Die()
     {
         if (isDead) return;
+        isDead = true;
 
-        isDead = true; // ตั้งค่า isDead เป็น true ก่อนทำอย่างอื่น
-
-        // แจ้ง UIManager ว่าศัตรูถูกทำลาย
-        if (UIManager.Instance != null)
+        // แยกการทำงานระหว่าง Map1 และ Map2
+        if (SceneManager.GetActiveScene().name == "Map2")
         {
-            UIManager.Instance.EnemyDefeated();
+            if (Map2EnemyCounter.Instance != null)
+            {
+                Map2EnemyCounter.Instance.EnemyKilled();
+            }
+            else
+            {
+                Debug.LogError("Map2EnemyCounter not found!");
+            }
         }
         else
         {
-            Debug.LogError("UIManager.Instance is null!");
+            // ใช้ระบบเดิมสำหรับ Map1
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.EnemyDefeated();
+            }
         }
 
-        // สร้างเอฟเฟกต์ระเบิด (ถ้ามี)
         if (explosionEffect != null)
         {
             Instantiate(explosionEffect, transform.position, transform.rotation);
         }
 
-        // ทำลายวัตถุ
         Destroy(gameObject);
     }
 }

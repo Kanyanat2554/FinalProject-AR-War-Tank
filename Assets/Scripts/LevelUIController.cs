@@ -11,23 +11,19 @@ public class LevelUIController : MonoBehaviour
     [SerializeField] private int totalEnemies = 3;
     [SerializeField] private int remainingEnemies = 3;
 
-    private void Start()
+    private void Awake()
     {
+        // ลงทะเบียนกับ UIManager ทันทีที่สร้าง
         if (UIManager.Instance != null)
         {
             UIManager.Instance.levelUI = this;
+            Debug.Log("LevelUIController registered with UIManager");
         }
 
+        // ย้ายการอัพเดต UI มาไว้ที่นี่แทน Start
         UpdateLevelDisplay();
         UpdateEnemyDisplay();
-    }
 
-    private void Awake()
-    {
-            // อัพเดต UI ทันทีที่โหลดซีน
-        UIManager.Instance.SetLevel(UIManager.Instance.currentLevelIndex + 1);
-        UIManager.Instance.SetEnemyCount(UIManager.Instance.enemiesRemaining);
-        
     }
 
     public void SetLevel(int level)

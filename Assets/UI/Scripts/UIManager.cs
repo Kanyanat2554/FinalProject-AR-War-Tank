@@ -34,28 +34,21 @@ public class UIManager : MonoBehaviour
     // ========== INITIALIZATION ==========
     void Awake()
     {
-        Debug.Log("UIManager Awake called");
+        // แก้ไข Awake ให้มีโครงสร้างที่ชัดเจน
         if (Instance == null)
         {
             Instance = this;
-            levelDatas = _levelDatas; // คัดลอกข้อมูลไปตัวแปร static
+            levelDatas = _levelDatas;
             DontDestroyOnLoad(gameObject);
         }
         else
         {
-            Debug.Log("Duplicate UIManager destroyed");
             Destroy(gameObject);
-        }
-        if (Instance != null && Instance != this)
-        {
-            Debug.Log($"Destroying duplicate UIManager in {gameObject.scene.name}");
-            Destroy(gameObject);
-            return; // ออกจากการทำงานทันที
+            return;
         }
 
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-        Debug.Log($"UIManager initialized in {gameObject.scene.name}");
+        // เพิ่มการฟังเหตุการณ์เมื่อโหลดซีนใหม่
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     void Start()
@@ -74,19 +67,39 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // ค้นหา LevelUIController ใหม่ทุกครั้งที่โหลดซีน
+        levelUI = Object.FindFirstObjectByType<LevelUIController>();
+        if (levelUI != null)
+        {
+            Debug.Log($"Found LevelUIController in {scene.name}");
+
+            // อัพเดตข้อมูลด่านปัจจุบัน
+            if (currentLevelIndex >= 0 && currentLevelIndex < levelDatas.Length)
+            {
+                var currentLevel = levelDatas[currentLevelIndex];
+                levelUI.ResetUI(currentLevel.levelNumber, currentLevel.enemyCount);
+            }
+        }
+        else
+        {
+            Debug.LogError($"No LevelUIController found in {scene.name}!");
+        }
+    }
+
     // ========== LEVEL MANAGEMENT ==========
 
     public LevelUIController levelUI;
 
     public void InitializeLevel(int enemyCount, int levelNum)
     {
-        if (enemyCount <= 0)
-        {
-            Debug.LogError($"Invalid enemy count: {enemyCount} for level {levelNum}");
-            return;
-        }
-
-        totalEnemies = enemyCount;
+        /*totalEnemies = enemyCount;
         enemiesRemaining = enemyCount;
 
         Debug.Log($"Level {levelNum} initialized with {totalEnemies} enemies");
@@ -99,6 +112,28 @@ public class UIManager : MonoBehaviour
         else
         {
             Debug.LogError("levelUI is not assigned!");
+        }*/
+        StartCoroutine(InitializeLevelRoutine(enemyCount, levelNum));
+    }
+
+    private IEnumerator InitializeLevelRoutine(int enemyCount, int levelNum)
+    {
+        yield return null; // รอ 1 เฟรม
+
+        if (levelUI == null)
+        {
+            levelUI = Object.FindFirstObjectByType<LevelUIController>();
+        }
+
+        if (levelUI != null)
+        {
+            levelUI.SetLevel(levelNum);
+            levelUI.SetEnemyCount(enemyCount);
+            Debug.Log($"Level initialized: {levelNum}, Enemies: {enemyCount}");
+        }
+        else
+        {
+            Debug.LogError("LevelUI still not found after waiting!");
         }
     }
 
@@ -112,6 +147,8 @@ public class UIManager : MonoBehaviour
         }
 
         enemiesRemaining--;
+
+        Debug.Log($"Enemy defeated! Remaining: {enemiesRemaining}");
 
         // ตรวจสอบว่า levelUI ไม่เป็น null ก่อนเรียกใช้
         if (levelUI != null)
