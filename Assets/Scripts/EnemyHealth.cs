@@ -44,21 +44,25 @@ public class EnemyHealth : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        // แยกการทำงานระหว่าง Map1 และ Map2
-        if (SceneManager.GetActiveScene().name == "Map2")
+        string currentScene = SceneManager.GetActiveScene().name;
+
+        if (currentScene == "Map3")
+        {
+            if (Map3EnemyCounter.Instance != null)
+            {
+                Map3EnemyCounter.Instance.EnemyKilled();
+            }
+        }
+        else if (currentScene == "Map2")
         {
             if (Map2EnemyCounter.Instance != null)
             {
                 Map2EnemyCounter.Instance.EnemyKilled();
             }
-            else
-            {
-                Debug.LogError("Map2EnemyCounter not found!");
-            }
         }
         else
         {
-            // ใช้ระบบเดิมสำหรับ Map1
+            // ระบบเดิมสำหรับ Map1
             if (UIManager.Instance != null)
             {
                 UIManager.Instance.EnemyDefeated();
@@ -69,7 +73,6 @@ public class EnemyHealth : MonoBehaviour
         {
             Instantiate(explosionEffect, transform.position, transform.rotation);
         }
-
         Destroy(gameObject);
     }
 }
