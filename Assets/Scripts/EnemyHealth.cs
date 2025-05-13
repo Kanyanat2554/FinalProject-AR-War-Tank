@@ -5,8 +5,12 @@ public class EnemyHealth : MonoBehaviour
 {
     [SerializeField] public int maxHealth = 100;
     [SerializeField] private int currentHealth;
+
     public GameObject explosionEffect;
     public EnemyHealthBar healthBar;
+
+    [SerializeField] private AudioClip deathSound;
+    [SerializeField][Range(0, 1)] private float deathSoundVolume = 0.7f;
 
     private bool isDead = false;
 
@@ -14,11 +18,13 @@ public class EnemyHealth : MonoBehaviour
     {
         currentHealth = maxHealth;
 
-        // ตรวจสอบว่า healthBar มี Component EnemyHealthBar หรือไม่
-        healthBar = GetComponent<EnemyHealthBar>();
         if (healthBar == null)
         {
-            healthBar = gameObject.AddComponent<EnemyHealthBar>();
+            healthBar = GetComponent<EnemyHealthBar>();
+            if (healthBar == null)
+            {
+                healthBar = gameObject.AddComponent<EnemyHealthBar>();
+            }
         }
 
         healthBar.maxHealth = maxHealth;
@@ -45,6 +51,11 @@ public class EnemyHealth : MonoBehaviour
         isDead = true;
 
         string currentScene = SceneManager.GetActiveScene().name;
+
+        if (deathSound != null)
+        {
+            AudioSource.PlayClipAtPoint(deathSound, transform.position, deathSoundVolume);
+        }
 
         if (currentScene == "Map3")
         {

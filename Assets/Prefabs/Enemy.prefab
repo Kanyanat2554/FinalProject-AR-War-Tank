@@ -173,9 +173,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5de4f2fbd478c24da39a55cdd221c13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 100
+  maxHealth: 100
+  currentHealth: 0
   explosionEffect: {fileID: 1000011797152326, guid: acf39d9f4addf294d93fa56fa373961b,
     type: 3}
+  healthBar: {fileID: 0}
+  deathSound: {fileID: 8300000, guid: f5eb2feafc78b0a428e3ade6dcac7021, type: 3}
+  deathSoundVolume: 0.7
 --- !u!1 &1226255788073668162
 GameObject:
   m_ObjectHideFlags: 0

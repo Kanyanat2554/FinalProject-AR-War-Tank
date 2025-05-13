@@ -14,7 +14,7 @@ namespace ChobiAssets.KTP
 		*/
 
         [Header("Bullet settings")]
-        [Tooltip("Life time of the bullet. (Sec)")] public float lifeTime = 5.0f;
+        [Tooltip("Life time of the bullet. (Sec)")] public float lifeTime = 3.0f;
         [Tooltip("Prefab for the broken effects.")] public GameObject brokenObject;
         [Tooltip("Set this Rigidbody.")] public Rigidbody thisRigidbody;
 
