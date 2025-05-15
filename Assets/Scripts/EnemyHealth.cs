@@ -1,89 +1,101 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class EnemyHealth : MonoBehaviour
 {
-    [SerializeField] public int maxHealth = 100;
-    [SerializeField] private int currentHealth;
-
-    public GameObject explosionEffect;
-    public EnemyHealthBar healthBar;
-
-    [SerializeField] private AudioClip deathSound;
-    [SerializeField][Range(0, 1)] private float deathSoundVolume = 0.7f;
-
+    [Header("Health Settings")]
+    public int maxHealth = 100;
+    private int currentHealth;
     private bool isDead = false;
 
-    private void Start()
+    [Header("UI (Health Bar)")]
+    public Slider healthSliderPrefab;
+    public Vector3 healthBarOffset = new Vector3(0, 2f, 0);
+    private Slider healthSlider;
+    private Camera mainCamera;
+
+    [Header("Effects")]
+    public GameObject explosionEffect;
+
+    void Start()
     {
         currentHealth = maxHealth;
+        mainCamera = Camera.main;
 
-        if (healthBar == null)
+        CreateHealthBar();
+    }
+
+    void CreateHealthBar()
+    {
+        Canvas canvas = FindOrCreateWorldCanvas();
+
+        if (healthSliderPrefab != null)
         {
-            healthBar = GetComponent<EnemyHealthBar>();
-            if (healthBar == null)
-            {
-                healthBar = gameObject.AddComponent<EnemyHealthBar>();
-            }
+            healthSlider = Instantiate(healthSliderPrefab, canvas.transform);
+            healthSlider.maxValue = maxHealth;
+            healthSlider.value = currentHealth;
         }
+        else
+        {
+            Debug.LogWarning("โ ๏ธ Health Slider Prefab not assigned!");
+        }
+    }
 
-        healthBar.maxHealth = maxHealth;
-        healthBar.currentHealth = currentHealth;
+    Canvas FindOrCreateWorldCanvas()
+    {
+        Canvas canvas = Object.FindFirstObjectByType<Canvas>(); 
+        if (canvas == null || canvas.renderMode != RenderMode.WorldSpace)
+        {
+            GameObject canvasGO = new GameObject("WorldSpaceCanvas");
+            canvas = canvasGO.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.WorldSpace;
+            canvasGO.AddComponent<CanvasScaler>();
+            canvasGO.AddComponent<GraphicRaycaster>();
+        }
+        return canvas;
     }
 
     public void TakeDamage(int damage)
     {
-        currentHealth -= damage;
-        healthBar.TakeDamage(damage);
+        if (isDead) return;
 
-        Debug.Log($"Enemy ({gameObject.name}) took {damage} damage. Current HP: {currentHealth}");
+        currentHealth -= damage;
+
+        if (healthSlider != null)
+            healthSlider.value = currentHealth;
 
         if (currentHealth <= 0)
-        {
-            Debug.Log($"Enemy ({gameObject.name}) died!");
             Die();
+    }
+
+    void LateUpdate()
+    {
+        if (healthSlider != null && mainCamera != null)
+        {
+            healthSlider.transform.position = transform.position + healthBarOffset;
+            healthSlider.transform.rotation = mainCamera.transform.rotation;
         }
     }
 
-    private void Die()
+    void Die()
     {
-        if (isDead) return;
         isDead = true;
 
-        string currentScene = SceneManager.GetActiveScene().name;
-
-        if (deathSound != null)
-        {
-            AudioSource.PlayClipAtPoint(deathSound, transform.position, deathSoundVolume);
-        }
-
-        if (currentScene == "Map3")
-        {
-            if (Map3EnemyCounter.Instance != null)
-            {
-                Map3EnemyCounter.Instance.EnemyKilled();
-            }
-        }
-        else if (currentScene == "Map2")
-        {
-            if (Map2EnemyCounter.Instance != null)
-            {
-                Map2EnemyCounter.Instance.EnemyKilled();
-            }
-        }
-        else
-        {
-            // ระบบเดิมสำหรับ Map1
-            if (UIManager.Instance != null)
-            {
-                UIManager.Instance.EnemyDefeated();
-            }
-        }
+        if (UIManager.Instance != null)
+            UIManager.Instance.EnemyDefeated();
 
         if (explosionEffect != null)
-        {
-            Instantiate(explosionEffect, transform.position, transform.rotation);
-        }
+            Instantiate(explosionEffect, transform.position, Quaternion.identity);
+
+        if (healthSlider != null)
+            Destroy(healthSlider.gameObject);
+
         Destroy(gameObject);
+    }
+
+    void OnDestroy()
+    {
+        if (healthSlider != null)
+            Destroy(healthSlider.gameObject);
     }
 }

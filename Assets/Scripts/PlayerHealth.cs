@@ -6,7 +6,6 @@ public class PlayerHealth : MonoBehaviour
 {
     [SerializeField] public int maxHealth = 100;
     [SerializeField] Slider healthSlider;
-    [SerializeField] string loseSceneName = "Lose";
 
     public int currentHealth;
 
@@ -37,6 +36,13 @@ public class PlayerHealth : MonoBehaviour
 
     private void Die()
     {
-        SceneManager.LoadScene(loseSceneName);
+        if (ARMapAutoPlacer_Static.Instance != null)
+        {
+            ARMapAutoPlacer_Static.Instance.ShowLose();
+        }
+        else
+        {
+            Debug.LogWarning("ARMapAutoPlacer Instance not found!");
+        }
     }
 }

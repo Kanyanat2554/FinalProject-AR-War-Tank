@@ -1,34 +1,24 @@
 using UnityEngine;
 using UnityEngine.UI;
-
+/*
 public class EnemyHealthBar : MonoBehaviour
 {
-    [Header("Health Settings")]
-    public int maxHealth = 100;
-    public int currentHealth;
-
-    [Header("UI Settings")]
-    public Slider healthSliderPrefab; // ≈“° Prefab Slider ®“° Editor ¡“„ Ë∑’Ëπ’Ë
+    public Slider healthSliderPrefab;       // ‡∏•‡∏≤‡∏Å prefab Slider ‡πÅ‡∏ö‡∏ö World Space
     public Vector3 healthBarOffset = new Vector3(0, 2f, 0);
 
     private Slider healthSlider;
     private Camera mainCamera;
 
-    private void Start()
+    void Start()
     {
-        currentHealth = maxHealth;
         mainCamera = Camera.main;
 
-        // µ√«® Õ∫«Ë“ Canvas ¡’Õ¬ŸËÀ√◊Õ‰¡Ë
-        var canvas = FindCanvas();
+        // ‡∏´‡∏≤ Canvas ‡πÅ‡∏ö‡∏ö World Space ‡∏´‡∏£‡∏∑‡∏≠‡∏™‡∏£‡πâ‡∏≤‡∏á‡πÉ‡∏´‡∏°‡πà‡∏ñ‡πâ‡∏≤‡πÑ‡∏°‡πà‡∏°‡∏µ
+        Canvas canvas = FindOrCreateCanvas();
 
-        //  √È“ß Health Bar ®“° Prefab
         if (healthSliderPrefab != null)
         {
             healthSlider = Instantiate(healthSliderPrefab, canvas.transform);
-            healthSlider.minValue = 0;
-            healthSlider.maxValue = maxHealth;
-            healthSlider.value = currentHealth;
         }
         else
         {
@@ -36,14 +26,12 @@ public class EnemyHealthBar : MonoBehaviour
         }
     }
 
-    private Canvas FindCanvas()
+    Canvas FindOrCreateCanvas()
     {
-        // À“ World Space Canvas ∑’Ë¡’Õ¬ŸË
-        var canvas = Object.FindFirstObjectByType<Canvas>();
+        Canvas canvas = Object.FindObjectOfType<Canvas>();
         if (canvas == null || canvas.renderMode != RenderMode.WorldSpace)
         {
-            //  √È“ß Canvas „À¡Ë∂È“‰¡Ë¡’
-            var canvasGO = new GameObject("WorldSpaceCanvas");
+            GameObject canvasGO = new GameObject("WorldSpaceCanvas");
             canvas = canvasGO.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.WorldSpace;
             canvasGO.AddComponent<CanvasScaler>();
@@ -52,37 +40,34 @@ public class EnemyHealthBar : MonoBehaviour
         return canvas;
     }
 
-    public void TakeDamage(int damage)
-    {
-        currentHealth -= damage;
-        UpdateHealth(currentHealth);
-
-        if (currentHealth <= 0)
-        {
-            DestroyHealthBar();
-            Destroy(gameObject);
-        }
-    }
-
-    public void UpdateHealth(int health)
+    public void SetMaxHealth(int max)
     {
         if (healthSlider != null)
         {
-            healthSlider.value = health;
+            healthSlider.maxValue = max;
+            healthSlider.value = max;
         }
     }
 
-    private void LateUpdate()
+    public void SetHealth(int current)
+    {
+        if (healthSlider != null)
+        {
+            healthSlider.value = current;
+        }
+    }
+
+    void LateUpdate()
     {
         if (healthSlider != null && mainCamera != null)
         {
-            // Õ—æ‡¥µµ”·ÀπËß Health Bar
+            // ‡∏ó‡∏≥‡πÉ‡∏´‡πâ‡πÅ‡∏ñ‡∏ö‡πÄ‡∏•‡∏∑‡∏≠‡∏î‡∏•‡∏≠‡∏¢‡πÄ‡∏´‡∏ô‡∏∑‡∏≠‡∏®‡∏±‡∏ï‡∏£‡∏π ‡πÅ‡∏•‡∏∞‡∏´‡∏±‡∏ô‡πÄ‡∏Ç‡πâ‡∏≤‡∏Å‡∏•‡πâ‡∏≠‡∏á‡πÄ‡∏™‡∏°‡∏≠
             healthSlider.transform.position = transform.position + healthBarOffset;
             healthSlider.transform.rotation = mainCamera.transform.rotation;
         }
     }
 
-    private void DestroyHealthBar()
+    public void DestroyBar()
     {
         if (healthSlider != null)
         {
@@ -92,6 +77,7 @@ public class EnemyHealthBar : MonoBehaviour
 
     private void OnDestroy()
     {
-        DestroyHealthBar();
+        DestroyBar();
     }
 }
+*/

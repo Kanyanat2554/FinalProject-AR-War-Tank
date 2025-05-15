@@ -1,279 +1,125 @@
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 using UnityEngine.SceneManagement;
-using System.Collections;
-
-
 public class UIManager : MonoBehaviour
 {
-    // Singleton pattern
     public static UIManager Instance;
+    
+    private bool isMuted = false;
 
-    // HP Bar
-    public Slider playerHPBar;
+    [Header("UI")]
+    public LevelUIController levelUI;
 
-    // Text Elements
-    public TextMeshProUGUI ammoText;
+    [Header("Level Data")]
+    public LevelData[] levelDatas;
+    private int currentLevelIndex = 0;
+    private int enemiesRemaining;
+    private int totalEnemies;
 
-    // Option Menu
-    public GameObject optionPanel;
+    [Header("Map Control")]
+    public ARMapAutoPlacer_Static mapPlacer;
 
-    // Level Settings
-    public int totalEnemies;
-    public int enemiesRemaining;
-
-    // Level Data
-    [SerializeField]
-    private LevelData[] _levelDatas;
-    public static LevelData[] levelDatas;
-
-   
-    public int currentLevelIndex = 0;
-
-    // ========== INITIALIZATION ==========
     void Awake()
     {
-        // แก้ไข Awake ให้มีโครงสร้างที่ชัดเจน
-        if (Instance == null)
-        {
-            Instance = this;
-            levelDatas = _levelDatas;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
 
-        // เพิ่มการฟังเหตุการณ์เมื่อโหลดซีนใหม่
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        Instance = this;
+
+        if (transform.parent == null)
+        {
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Debug.LogWarning("โ ๏ธ UIManager is not on a root GameObject. Not using DontDestroyOnLoad.");
+        }
     }
 
     void Start()
     {
-        Debug.Log($"Initial Level Data: {levelDatas?.Length ?? 0} levels loaded");
-
-        if (levelDatas != null && levelDatas.Length > 0)
+        if (levelDatas == null || levelDatas.Length == 0)
         {
-            Debug.Log($"First level enemies: {levelDatas[0].enemyCount}");
+            Debug.LogError("โ levelDatas is empty! Please assign in Inspector.");
+            return;
         }
 
-        // เริ่มเกมด้วยด่านแรก
-        if (currentLevelIndex == 0 && levelDatas != null && levelDatas.Length > 0)
-        {
-            InitializeLevel(levelDatas[0].enemyCount, levelDatas[0].levelNumber);
-        }
+        LoadLevel(0);
     }
 
-    void OnDestroy()
+    public void LoadLevel(int index)
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        // ค้นหา LevelUIController ใหม่ทุกครั้งที่โหลดซีน
-        levelUI = Object.FindFirstObjectByType<LevelUIController>();
-        if (levelUI != null)
+        if (index < 0 || index >= levelDatas.Length)
         {
-            Debug.Log($"Found LevelUIController in {scene.name}");
-
-            // อัพเดตข้อมูลด่านปัจจุบัน
-            if (currentLevelIndex >= 0 && currentLevelIndex < levelDatas.Length)
-            {
-                var currentLevel = levelDatas[currentLevelIndex];
-                levelUI.ResetUI(currentLevel.levelNumber, currentLevel.enemyCount);
-            }
+            Debug.LogError($"Invalid level index: {index}");
+            return;
         }
-        else
+
+        currentLevelIndex = index;
+        var data = levelDatas[index];
+        totalEnemies = data.enemyCount;
+        enemiesRemaining = data.enemyCount;
+
+        if (mapPlacer != null)
         {
-            Debug.LogError($"No LevelUIController found in {scene.name}!");
-        }
-    }
-
-    // ========== LEVEL MANAGEMENT ==========
-
-    public LevelUIController levelUI;
-
-    public void InitializeLevel(int enemyCount, int levelNum)
-    {
-        /*totalEnemies = enemyCount;
-        enemiesRemaining = enemyCount;
-
-        Debug.Log($"Level {levelNum} initialized with {totalEnemies} enemies");
-
-        if (levelUI != null)
-        {
-            levelUI.SetLevel(levelNum);
-            levelUI.SetEnemyCount(totalEnemies);
-        }
-        else
-        {
-            Debug.LogError("levelUI is not assigned!");
-        }*/
-        StartCoroutine(InitializeLevelRoutine(enemyCount, levelNum));
-    }
-
-    private IEnumerator InitializeLevelRoutine(int enemyCount, int levelNum)
-    {
-        yield return null; // รอ 1 เฟรม
-
-        if (levelUI == null)
-        {
-            levelUI = Object.FindFirstObjectByType<LevelUIController>();
+            mapPlacer.LoadLevelAtIndex(index);
         }
 
         if (levelUI != null)
         {
-            levelUI.SetLevel(levelNum);
-            levelUI.SetEnemyCount(enemyCount);
-            Debug.Log($"Level initialized: {levelNum}, Enemies: {enemyCount}");
-        }
-        else
-        {
-            Debug.LogError("LevelUI still not found after waiting!");
+            levelUI.SetLevel(data.levelNumber);
+            levelUI.UpdateEnemyCounter(enemiesRemaining, totalEnemies);
         }
     }
 
     public void EnemyDefeated()
     {
-        // ตรวจสอบว่ายังมีศัตรูเหลืออยู่ก่อนลดค่า
-        if (enemiesRemaining <= 0)
-        {
-            Debug.LogWarning("Attempted to decrement enemies when count is already 0");
-            return;
-        }
-
         enemiesRemaining--;
-
-        Debug.Log($"Enemy defeated! Remaining: {enemiesRemaining}");
-
-        // ตรวจสอบว่า levelUI ไม่เป็น null ก่อนเรียกใช้
         if (levelUI != null)
-        {
-            levelUI.UpdateRemainingEnemies(enemiesRemaining);
-        }
-        else
-        {
-            Debug.LogError("levelUI is null in UIManager!");
-        }
+            levelUI.UpdateEnemyCounter(enemiesRemaining, totalEnemies);
 
-        // ตรวจสอบเงื่อนไขเคลียร์ด่าน
         if (enemiesRemaining <= 0)
         {
-            Debug.Log("All enemies defeated! Loading next level...");
-            Invoke("LoadNextLevel", 2f);
+            if (currentLevelIndex >= levelDatas.Length - 1)
+                mapPlacer.ShowWin();
+            else
+                LoadLevel(currentLevelIndex + 1);
         }
     }
 
-    private void LoadNextLevel()
+    public void TriggerGameOver()
     {
-        int nextLevelIndex = currentLevelIndex + 1;
+        mapPlacer.ShowLose();
+    }
+    
+    public void ResetGame()
+    {
+        currentLevelIndex = 0;
+        LoadLevel(0);  // เธฃเธตเน€เธเธ•เธ”เนเธฒเธเนเธฃเธเนเธซเธกเน
+    }
+    // --- เธเธฑเธเธเนเธเธฑเธเน€เธเธดเนเธก ---
 
-        if (nextLevelIndex < levelDatas.Length)
-        {
-            LoadLevel(nextLevelIndex);
-        }
-        else
-        {
-            SceneManager.LoadScene("Win");
-        }
+    // เธฃเธตเน€เธเธ•เน€เธเธก (เนเธเนเธเธฑเธ RestartButton)
+    public void RestartGame()
+    {
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.name);
     }
 
-    public void LoadLevel(int levelIndex)
+    // Mute / Unmute เน€เธชเธตเธขเธ
+    public void ToggleMute()
     {
-        if (levelIndex < 0 || levelIndex >= levelDatas.Length)
-        {
-            Debug.LogError($"Invalid level index: {levelIndex}");
-            return;
-        }
-
-        currentLevelIndex = levelIndex; // <-- ย้ายมาทำตรงนี้
-        var levelData = levelDatas[levelIndex];
-
-        Debug.Log($"Loading level {levelData.levelNumber} with {levelData.enemyCount} enemies");
-
-        StartCoroutine(LoadLevelAsync(levelData));
+        isMuted = !isMuted;
+        AudioListener.volume = isMuted ? 0f : 1f;
+        Debug.Log(isMuted ? "Audio muted" : "Audio unmuted");
     }
+}
 
-    private IEnumerator LoadLevelAsync(LevelData levelData)
-    {
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(levelData.sceneName);
-
-        // รอจนกระทั่งโหลดซีนเสร็จสิ้น
-        while (!asyncLoad.isDone)
-        {
-            yield return null;
-        }
-
-        // รอให้ซีนใหม่ตั้งค่าทั้งหมดเสร็จ
-        yield return new WaitForEndOfFrame();
-
-        // ตั้งค่าด่านหลังจากโหลดซีนเสร็จแล้ว
-        InitializeLevel(levelData.enemyCount, levelData.levelNumber);
-    }
-
-    // ========== UI FUNCTIONS ==========
-    public void SetPlayerHP(float current, float max)
-    {
-        if (playerHPBar != null)
-            playerHPBar.value = current / max;
-    }
-
-
-    public void SetAmmo(int value)
-    {
-        if (ammoText != null)
-            ammoText.text = "Ammo: " + value;
-    }
-
-    public void SetLevel(int levelNumber)
-    {
-        if (levelUI != null)
-            levelUI.SetLevel(levelNumber);
-    }
-
-    public void SetEnemyCount(int count)
-    {
-        if (levelUI != null)
-        {
-            levelUI.UpdateRemainingEnemies(count); // ต้องเรียกฟังก์ชันใหม่ที่คุณต้องเพิ่ม
-        }
-    }
-
-    // ========== OPTION MENU FUNCTIONS ==========
-    public void ToggleOptionPanel()
-    {
-        if (optionPanel != null)
-        {
-            optionPanel.SetActive(!optionPanel.activeSelf);
-            Time.timeScale = optionPanel.activeSelf ? 0f : 1f;
-        }
-    }
-
-    public void ResumeGame()
-    {
-        Time.timeScale = 1f;
-        if (optionPanel != null)
-            optionPanel.SetActive(false);
-    }
-
-    public void MuteGame()
-    {
-        AudioListener.volume = (AudioListener.volume > 0f) ? 0f : 1f;
-    }
-
-    public void QuitGame()
-    {
-        Application.Quit();
-        Debug.Log("Quit Game");
-    }
-
-    public void StartGame()
-    {
-        Time.timeScale = 1f;
-        LoadLevel(0);
-    }
+[System.Serializable]
+public class LevelData
+{
+    public int levelNumber;
+    public int enemyCount;
 }

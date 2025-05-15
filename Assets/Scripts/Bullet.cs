@@ -16,14 +16,29 @@ public class Bullet : MonoBehaviour
 
         if (other.CompareTag("Enemy"))
         {
-            Debug.Log($"Enemy hit! Dealing {damage} damage");
-            other.GetComponent<EnemyHealth>().TakeDamage(damage);
+            // ปลอดภัย: ตรวจสอบว่ามี EnemyHealth ก่อน
+            EnemyHealth enemy = other.GetComponentInParent<EnemyHealth>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(damage);
+                Debug.Log($"Enemy {enemy.name} took {damage} damage");
+            }
+            else
+            {
+                Debug.LogWarning("⚠️ EnemyHealth script not found on hit object.");
+            }
+
             Destroy(gameObject);
         }
         else if (other.CompareTag("Player"))
         {
-            Debug.Log($"Player hit! Dealing {damage} damage");
-            other.GetComponent<PlayerHealth>().TakeDamage(damage);
+            PlayerHealth player = other.GetComponent<PlayerHealth>();
+            if (player != null)
+            {
+                player.TakeDamage(damage);
+                Debug.Log($"Player took {damage} damage");
+            }
+
             Destroy(gameObject);
         }
     }

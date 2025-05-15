@@ -202,8 +202,8 @@ MonoBehaviour:
   rotationSpeedX: 0
   rotationSpeedY: 0.5
   rotationSpeedZ: 0
-  minHealAmount: 20
-  maxHealAmount: 50
+  minHealAmount: 100
+  maxHealAmount: 300
 --- !u!65 &4187225935698876961
 BoxCollider:
   m_ObjectHideFlags: 0
