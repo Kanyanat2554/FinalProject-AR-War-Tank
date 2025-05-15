@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: XRSimulationPreferences
   m_EditorClassIdentifier: 
   m_HasInputActionUpgrade: 1
-  m_EnvironmentPrefab: {fileID: 8842492908595114926, guid: fb211967781995243bc56e45cf85d81a,
+  m_EnvironmentPrefab: {fileID: 5430835068141665080, guid: bb0b4bb82e54fb94ea27dc95f85181ca,
     type: 3}
   m_FallbackEnvironmentPrefab: {fileID: 0}
   m_UnlockInputActionReference: {fileID: -6503468053843192148, guid: 1dd796eaee8744b4aa41b3f8bf5df64f,
